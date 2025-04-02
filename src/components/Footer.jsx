@@ -3,7 +3,7 @@ import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-white py-12 px-6 border-t border-gray-800">
+    <footer className="bg-black text-white py-12 px-6 border-t border-gray-900">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0 }}
@@ -15,7 +15,7 @@ const Footer = () => {
             <h3 className="text-xl font-bold mb-4 text-white">
               Solo Leveling Fan Project
             </h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed">
               This is a fan-made project inspired by the Solo Leveling manhwa
               and anime. All characters, locations, and storylines belong to
               their respective owners.
@@ -24,7 +24,7 @@ const Footer = () => {
 
           <div>
             <h3 className="text-xl font-bold mb-4 text-white">Disclaimer</h3>
-            <p className="text-gray-300 text-sm leading-relaxed">
+            <p className="text-gray-400 text-sm leading-relaxed">
               This website is not affiliated with the official Solo Leveling
               franchise. Created for educational and entertainment purposes
               only.
@@ -36,7 +36,7 @@ const Footer = () => {
             <div className="flex space-x-6 text-2xl">
               <motion.a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-primary-400 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
@@ -44,7 +44,7 @@ const Footer = () => {
               </motion.a>
               <motion.a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-primary-400 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
@@ -52,7 +52,7 @@ const Footer = () => {
               </motion.a>
               <motion.a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-primary-400 transition-colors"
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
@@ -62,7 +62,7 @@ const Footer = () => {
           </div>
         </motion.div>
 
-        <div className="mt-10 pt-8 border-t border-gray-800 text-center text-sm text-gray-400">
+        <div className="mt-10 pt-8 border-t border-gray-900 text-center text-sm text-gray-500">
           <p>
             &copy; {new Date().getFullYear()} Solo Leveling Fan Project. All
             rights reserved.

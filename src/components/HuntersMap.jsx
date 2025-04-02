@@ -1,76 +1,61 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
   Marker,
   Popup,
   useMap,
-  ZoomControl,
+  LayerGroup,
+  CircleMarker,
 } from "react-leaflet";
-import { motion } from "framer-motion";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import locations from "../data/locations";
-import { FaLocationArrow, FaTimesCircle, FaInfoCircle } from "react-icons/fa";
+import { FaFilter } from "react-icons/fa";
 
-// Fix for default marker icons in Leaflet
+// Fix for default marker icons in Leaflet with webpack
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+    "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
 });
 
-// Custom marker icons based on dungeon rank
+// Create custom icons for different gate ranks
 const createRankIcon = (rank) => {
-  let color;
-  let size;
-  switch (rank) {
-    case "S-Rank":
-      color = "#ef4444"; // Red
-      size = 32;
-      break;
-    case "A-Rank":
-      color = "#f97316"; // Orange
-      size = 28;
-      break;
-    case "B-Rank":
-      color = "#eab308"; // Yellow
-      size = 24;
-      break;
-    case "C-Rank":
-      color = "#22c55e"; // Green
-      size = 22;
-      break;
-    case "D-Rank":
-      color = "#3b82f6"; // Blue
-      size = 20;
-      break;
-    case "E-Rank":
-      color = "#a855f7"; // Purple
-      size = 18;
-      break;
-    default:
-      color = "#3b82f6"; // Default blue
-      size = 20;
-  }
+  const getRankColor = (rank) => {
+    switch (rank) {
+      case "S":
+        return "#ef4444"; // red-500
+      case "A":
+        return "#f97316"; // orange-500
+      case "B":
+        return "#eab308"; // yellow-500
+      case "C":
+        return "#22c55e"; // green-500
+      case "D":
+        return "#3b82f6"; // blue-500
+      case "E":
+        return "#a855f7"; // purple-500
+      default:
+        return "#6b7280"; // gray-500
+    }
+  };
 
   return L.divIcon({
     className: "custom-div-icon",
-    html: `<div style="background-color: ${color}; width: ${size}px; height: ${size}px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: ${
-      size / 2.5
-    }px;">${rank[0]}</div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -(size / 2)],
+    html: `<div style="background-color: ${getRankColor(
+      rank
+    )}; color: white; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-weight: bold; box-shadow: 0 0 10px rgba(0,0,0,0.5);">${rank}</div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+    popupAnchor: [0, -12],
   });
 };
 
-// Map view controller
-const ChangeView = ({ center, zoom }) => {
+// Map Center component
+const ChangeMapView = ({ center, zoom }) => {
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
@@ -78,259 +63,259 @@ const ChangeView = ({ center, zoom }) => {
   return null;
 };
 
-// Custom dark map style
-const darkMapStyle =
-  "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png";
-
 const HuntersMap = () => {
-  const [selectedLocation, setSelectedLocation] = useState(null);
-  const [mapCenter, setMapCenter] = useState([36.5, 127.5]); // Center of South Korea
-  const [mapZoom, setMapZoom] = useState(7);
-  const mapRef = useRef(null);
+  const [mapCenter, setMapCenter] = useState([37.5665, 126.978]); // Seoul, South Korea
+  const [mapZoom, setMapZoom] = useState(5);
+  const [countryFilter, setCountryFilter] = useState("all");
+  const [rankFilter, setRankFilter] = useState("all");
 
-  // Handle marker click
-  const handleMarkerClick = (location) => {
-    setSelectedLocation(location);
-    setMapCenter(location.coords);
-    setMapZoom(12);
+  // Filter locations based on selected country and rank
+  const filteredLocations = locations.filter((location) => {
+    const matchesCountry =
+      countryFilter === "all" || location.country === countryFilter;
+    const matchesRank = rankFilter === "all" || location.rank === rankFilter;
+    return matchesCountry && matchesRank;
+  });
+
+  // Center map on a specific country
+  const centerMapOnCountry = useCallback((country) => {
+    switch (country) {
+      case "South Korea":
+        setMapCenter([37.5665, 126.978]); // Seoul
+        setMapZoom(6);
+        break;
+      case "Japan":
+        setMapCenter([35.6762, 139.6503]); // Tokyo
+        setMapZoom(5);
+        break;
+      default:
+        setMapCenter([38.0, 129.0]); // Between Korea and Japan
+        setMapZoom(4);
+        break;
+    }
+  }, []);
+
+  // Handle country filter change
+  const handleCountryFilterChange = (e) => {
+    const country = e.target.value;
+    setCountryFilter(country);
+    if (country !== "all") {
+      centerMapOnCountry(country);
+    } else {
+      // Show both countries if "all" is selected
+      setMapCenter([38.0, 129.0]); // Between Korea and Japan
+      setMapZoom(4);
+    }
   };
 
-  // Close details panel
-  const closeDetails = () => {
-    setSelectedLocation(null);
-    setMapZoom(7);
-    setMapCenter([36.5, 127.5]);
+  // Handle rank filter change
+  const handleRankFilterChange = (e) => {
+    setRankFilter(e.target.value);
   };
 
-  // Reset view to show all markers
-  const resetView = () => {
-    setMapZoom(7);
-    setMapCenter([36.5, 127.5]);
+  // Generate popup content for a location
+  const getPopupContent = (location) => {
+    return `
+      <div class="location-popup">
+        <h3 style="color: #f3f4f6; margin-bottom: 5px; font-weight: bold;">${
+          location.name
+        }</h3>
+        <p style="color: #d1d5db; margin-bottom: 5px; font-size: 0.9rem;">${
+          location.description
+        }</p>
+        <div style="display: flex; align-items: center; margin-top: 8px;">
+          <span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; 
+          background: ${
+            location.rank === "S"
+              ? "#7f1d1d"
+              : location.rank === "A"
+              ? "#9a3412"
+              : location.rank === "B"
+              ? "#854d0e"
+              : location.rank === "C"
+              ? "#166534"
+              : location.rank === "D"
+              ? "#1e40af"
+              : location.rank === "E"
+              ? "#581c87"
+              : "#374151"
+          }; 
+          color: ${
+            location.rank === "S"
+              ? "#fecaca"
+              : location.rank === "A"
+              ? "#fed7aa"
+              : location.rank === "B"
+              ? "#fef08a"
+              : location.rank === "C"
+              ? "#bbf7d0"
+              : location.rank === "D"
+              ? "#bfdbfe"
+              : location.rank === "E"
+              ? "#e9d5ff"
+              : "#f3f4f6"
+          }; 
+          font-weight: bold; font-size: 0.75rem; margin-right: 8px;">
+            ${location.rank} Rank
+          </span>
+          <span style="color: #9ca3af; font-size: 0.75rem;">${
+            location.country
+          }</span>
+        </div>
+      </div>
+    `;
   };
 
   return (
-    <section id="map" className="py-16 px-4 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-3xl font-bold mb-8 text-center text-gray-900">
-          Hunters Association Map
-        </h2>
-        <p className="text-gray-600 text-center mb-12 max-w-3xl mx-auto">
-          Explore the dangerous gates and dungeons across South Korea that have
-          appeared in Solo Leveling. Click on a marker to learn more about each
-          location.
+    <div className="bg-gray-800 rounded-xl border border-gray-700 shadow-md overflow-hidden">
+      <div className="p-3 border-b border-gray-700 bg-gray-900">
+        <h3 className="text-lg font-bold text-gray-100 mb-2">
+          Hunter Association Map
+        </h3>
+        <p className="text-gray-300 text-sm mb-3">
+          Explore gate locations across East Asia
         </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Map Container */}
-          <div className="lg:col-span-2 h-[600px] rounded-xl overflow-hidden shadow-sm border border-gray-200 relative">
-            <MapContainer
-              center={mapCenter}
-              zoom={mapZoom}
-              style={{ height: "100%", width: "100%" }}
-              zoomControl={false}
-              ref={mapRef}
-              attributionControl={false}
-            >
-              <TileLayer url={darkMapStyle} attribution="" />
-              <ZoomControl position="topright" />
-              <ChangeView center={mapCenter} zoom={mapZoom} />
-
-              {locations.map((location) => (
-                <Marker
-                  key={location.id}
-                  position={location.coords}
-                  icon={createRankIcon(location.rank)}
-                  eventHandlers={{
-                    click: () => handleMarkerClick(location),
-                  }}
-                >
-                  <Popup className="marker-popup">
-                    <div className="font-bold">{location.name}</div>
-                    <div className="text-sm">{location.rank}</div>
-                  </Popup>
-                </Marker>
-              ))}
-            </MapContainer>
-
-            {/* Map Controls */}
-            <div className="absolute bottom-4 right-4 flex flex-col space-y-2 z-[999]">
-              <button
-                onClick={resetView}
-                className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-full shadow-sm border border-gray-200 transition-all duration-300"
-                title="Reset View"
-              >
-                <FaLocationArrow />
-              </button>
-            </div>
+        <div className="flex gap-2 mb-2">
+          <div className="flex items-center gap-1">
+            <FaFilter className="text-gray-400 text-sm" />
+            <span className="text-gray-300 text-sm">Filters:</span>
           </div>
 
-          {/* Location Details Panel */}
-          <div className="lg:col-span-1">
-            {selectedLocation ? (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-full map-card"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-2xl font-bold text-gray-900">
-                    {selectedLocation.name}
-                  </h3>
-                  <button
-                    onClick={closeDetails}
-                    className="text-gray-400 hover:text-gray-600"
-                    aria-label="Close details"
-                  >
-                    <FaTimesCircle className="text-xl" />
-                  </button>
-                </div>
+          <select
+            value={countryFilter}
+            onChange={handleCountryFilterChange}
+            className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
+          >
+            <option value="all">All Countries</option>
+            <option value="South Korea">South Korea</option>
+            <option value="Japan">Japan</option>
+          </select>
 
+          <select
+            value={rankFilter}
+            onChange={handleRankFilterChange}
+            className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
+          >
+            <option value="all">All Ranks</option>
+            <option value="S">S Rank</option>
+            <option value="A">A Rank</option>
+            <option value="B">B Rank</option>
+            <option value="C">C Rank</option>
+            <option value="D">D Rank</option>
+            <option value="E">E Rank</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="h-[320px] relative z-0">
+        <MapContainer
+          center={mapCenter}
+          zoom={mapZoom}
+          style={{ height: "100%", width: "100%" }}
+          scrollWheelZoom={true}
+          zoomControl={false}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            className="map-tiles-dark" // Apply custom CSS for dark map
+          />
+
+          <ChangeMapView center={mapCenter} zoom={mapZoom} />
+
+          <LayerGroup>
+            {filteredLocations.map((location) => (
+              <React.Fragment key={location.id}>
+                <Marker
+                  position={[location.lat, location.lng]}
+                  icon={createRankIcon(location.rank)}
+                >
+                  <Popup className="dark-popup" minWidth={200} maxWidth={300}>
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: getPopupContent(location),
+                      }}
+                    />
+                  </Popup>
+                </Marker>
+                <CircleMarker
+                  center={[location.lat, location.lng]}
+                  radius={
+                    location.rank === "S"
+                      ? 30
+                      : location.rank === "A"
+                      ? 25
+                      : location.rank === "B"
+                      ? 20
+                      : location.rank === "C"
+                      ? 15
+                      : location.rank === "D"
+                      ? 10
+                      : 5
+                  }
+                  pathOptions={{
+                    color:
+                      location.rank === "S"
+                        ? "#ef4444"
+                        : location.rank === "A"
+                        ? "#f97316"
+                        : location.rank === "B"
+                        ? "#eab308"
+                        : location.rank === "C"
+                        ? "#22c55e"
+                        : location.rank === "D"
+                        ? "#3b82f6"
+                        : "#a855f7",
+                    fillColor:
+                      location.rank === "S"
+                        ? "#ef4444"
+                        : location.rank === "A"
+                        ? "#f97316"
+                        : location.rank === "B"
+                        ? "#eab308"
+                        : location.rank === "C"
+                        ? "#22c55e"
+                        : location.rank === "D"
+                        ? "#3b82f6"
+                        : "#a855f7",
+                    fillOpacity: 0.1,
+                    weight: 1,
+                  }}
+                />
+              </React.Fragment>
+            ))}
+          </LayerGroup>
+        </MapContainer>
+
+        <div className="absolute bottom-2 right-2 bg-gray-800 bg-opacity-75 p-2 rounded border border-gray-700 z-10">
+          <div className="flex flex-col gap-1">
+            {["S", "A", "B", "C", "D", "E"].map((rank) => (
+              <div key={rank} className="flex items-center gap-1">
                 <div
-                  className="mb-4 inline-block px-2 py-1 rounded-full text-xs font-medium"
+                  className="w-3 h-3 rounded-full"
                   style={{
                     backgroundColor:
-                      selectedLocation.rank === "S-Rank"
-                        ? "rgba(239, 68, 68, 0.1)"
-                        : selectedLocation.rank === "A-Rank"
-                        ? "rgba(249, 115, 22, 0.1)"
-                        : selectedLocation.rank === "B-Rank"
-                        ? "rgba(234, 179, 8, 0.1)"
-                        : selectedLocation.rank === "C-Rank"
-                        ? "rgba(34, 197, 94, 0.1)"
-                        : selectedLocation.rank === "D-Rank"
-                        ? "rgba(59, 130, 246, 0.1)"
-                        : "rgba(168, 85, 247, 0.1)",
-                    color:
-                      selectedLocation.rank === "S-Rank"
+                      rank === "S"
                         ? "#ef4444"
-                        : selectedLocation.rank === "A-Rank"
+                        : rank === "A"
                         ? "#f97316"
-                        : selectedLocation.rank === "B-Rank"
+                        : rank === "B"
                         ? "#eab308"
-                        : selectedLocation.rank === "C-Rank"
+                        : rank === "C"
                         ? "#22c55e"
-                        : selectedLocation.rank === "D-Rank"
+                        : rank === "D"
                         ? "#3b82f6"
                         : "#a855f7",
                   }}
-                >
-                  {selectedLocation.rank}
-                </div>
-
-                <div className="h-48 bg-gray-100 rounded-lg mb-4 flex items-center justify-center overflow-hidden relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-primary-700/5"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg
-                      className="w-16 h-16 text-primary-200"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-gray-400 relative z-10">
-                    Location Image
-                  </span>
-                </div>
-
-                <p className="text-gray-600 mb-6">
-                  {selectedLocation.description}
-                </p>
-
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-500">
-                    <p className="flex items-center">
-                      <svg
-                        className="w-4 h-4 mr-1"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        ></path>
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        ></path>
-                      </svg>
-                      {selectedLocation.coords[0].toFixed(4)},{" "}
-                      {selectedLocation.coords[1].toFixed(4)}
-                    </p>
-                  </div>
-                  {selectedLocation.source && (
-                    <div className="text-xs text-gray-400 italic">
-                      Source: {selectedLocation.source}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-full flex flex-col justify-center items-center text-center map-card"
-              >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mb-4">
-                  <FaInfoCircle className="text-2xl text-primary-600" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  Select a Location
-                </h3>
-                <p className="text-gray-500 mb-6 max-w-xs">
-                  Click on any marker on the map to view detailed information
-                  about that dungeon.
-                </p>
-                <div className="grid grid-cols-3 gap-2 w-full max-w-xs">
-                  {["S-Rank", "A-Rank", "B-Rank", "D-Rank", "E-Rank"].map(
-                    (rank) => (
-                      <div
-                        key={rank}
-                        className="flex items-center justify-center p-2 rounded-lg bg-gray-50"
-                      >
-                        <div
-                          style={{
-                            backgroundColor:
-                              rank === "S-Rank"
-                                ? "#ef4444"
-                                : rank === "A-Rank"
-                                ? "#f97316"
-                                : rank === "B-Rank"
-                                ? "#eab308"
-                                : rank === "C-Rank"
-                                ? "#22c55e"
-                                : rank === "D-Rank"
-                                ? "#3b82f6"
-                                : "#a855f7",
-                            width: "12px",
-                            height: "12px",
-                            borderRadius: "50%",
-                            display: "inline-block",
-                            marginRight: "6px",
-                          }}
-                        ></div>
-                        <span className="text-xs text-gray-700">{rank}</span>
-                      </div>
-                    )
-                  )}
-                </div>
-              </motion.div>
-            )}
+                ></div>
+                <span className="text-xs text-gray-200">{rank} Rank</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

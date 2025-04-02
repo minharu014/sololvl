@@ -1,365 +1,321 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { FaStar, FaSearch, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaSearch, FaShieldAlt, FaUser, FaStar } from "react-icons/fa";
+
+// Hunter data array
+const hunters = [
+  {
+    id: 1,
+    name: "Sung Jin-Woo",
+    rank: "S",
+    nickname: "Shadow Monarch",
+    nationality: "South Korean",
+    association: "Hunters Guild",
+    power: "Shadow Extraction",
+    bio: "Initially the world's weakest hunter, Sung Jin-Woo underwent a mysterious transformation and gained the unique ability to level up and extract shadows from deceased monsters and hunters.",
+    img: "https://i.imgur.com/LdOXwD3.png",
+  },
+  {
+    id: 2,
+    name: "Cha Hae-In",
+    rank: "S",
+    nickname: "White Tiger",
+    nationality: "South Korean",
+    association: "Hunters Guild",
+    power: "Enhanced Senses",
+    bio: "An S-Rank hunter known for her exceptional combat skills and unique ability to sense the 'smell' of other hunters. She is one of the few who can detect Jin-Woo's true power.",
+    img: "https://i.imgur.com/lMS3CnK.png",
+  },
+  {
+    id: 3,
+    name: "Choi Jong-In",
+    rank: "S",
+    nickname: "Flame King",
+    nationality: "South Korean",
+    association: "Hunters Guild",
+    power: "Pyrokinesis",
+    bio: "A veteran S-Rank hunter with powerful flame manipulation abilities. He leads the Korean Hunters Guild and mentors many younger hunters.",
+    img: "https://i.imgur.com/yH9qTpV.png",
+  },
+  {
+    id: 4,
+    name: "Baek Yoon-Ho",
+    rank: "S",
+    nickname: "Berserker",
+    nationality: "South Korean",
+    association: "White Tiger Guild",
+    power: "Beast Transformation",
+    bio: "The guild master of the White Tiger Guild who possesses the ability to transform into a powerful beast form, enhancing his physical abilities significantly.",
+    img: "https://i.imgur.com/NRYrwRp.png",
+  },
+  {
+    id: 5,
+    name: "Thomas Andre",
+    rank: "S+",
+    nickname: "Goliath",
+    nationality: "American",
+    association: "Scavenger Guild",
+    power: "Immense Strength",
+    bio: "One of the five National Level Hunters globally, Thomas Andre possesses incredible physical strength and durability, making him nearly invulnerable to most attacks.",
+    img: "https://i.imgur.com/nH3q3SX.png",
+  },
+  {
+    id: 6,
+    name: "Liu Zhigang",
+    rank: "S+",
+    nickname: "Emperor",
+    nationality: "Chinese",
+    association: "Chinese Hunter Association",
+    power: "Gravity Manipulation",
+    bio: "A National Level Hunter representing China, Liu Zhigang can manipulate gravity around him, allowing him to crush his enemies with immense pressure.",
+    img: "https://i.imgur.com/Prc4vZu.png",
+  },
+  {
+    id: 7,
+    name: "Goto Ryuji",
+    rank: "S",
+    nickname: "Demon Slayer",
+    nationality: "Japanese",
+    association: "Japanese Hunter Association",
+    power: "Enhanced Speed",
+    bio: "Japan's strongest hunter, known for his incredible speed and precision in combat. He leads many of Japan's high-rank gate clearings.",
+    img: "https://i.imgur.com/3fABPOb.png",
+  },
+  {
+    id: 8,
+    name: "Christopher Reed",
+    rank: "S+",
+    nickname: "Phoenix",
+    nationality: "British",
+    association: "European Hunter Alliance",
+    power: "Regeneration",
+    bio: "A National Level Hunter with remarkable healing abilities that allow him to recover from nearly any injury. He coordinates Europe's defense against high-level threats.",
+    img: "https://i.imgur.com/cY9PEiV.png",
+  },
+];
 
 const HuntersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortKey, setSortKey] = useState("rank");
-  const [sortOrder, setSortOrder] = useState("asc");
   const [selectedHunter, setSelectedHunter] = useState(null);
 
-  // Sample hunters data
-  const hunters = [
-    {
-      id: 1,
-      name: "Sung Jin-Woo",
-      rank: "S",
-      association: "Ahjin Guild",
-      specialization: "Shadow Monarch",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 2,
-      name: "Cha Hae-In",
-      rank: "S",
-      association: "Hunter's Guild",
-      specialization: "Swordsmanship",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 3,
-      name: "Choi Jong-In",
-      rank: "S",
-      association: "Hunter's Guild",
-      specialization: "Mage",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 4,
-      name: "Baek Yoon-Ho",
-      rank: "S",
-      association: "White Tiger Guild",
-      specialization: "Beast Transformation",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 5,
-      name: "Hwang Dong-Su",
-      rank: "S",
-      association: "Scavenger Guild",
-      specialization: "Strength Enhancement",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 6,
-      name: "Go Gun-Hee",
-      rank: "S",
-      association: "Hunter Association",
-      specialization: "Chairman",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 7,
-      name: "Min Byung-Gu",
-      rank: "A",
-      association: "Hunters Guild",
-      specialization: "Healing",
-      image: "https://via.placeholder.com/60",
-    },
-    {
-      id: 8,
-      name: "Kang Tae-Shik",
-      rank: "B",
-      association: "Hunters Guild",
-      specialization: "Scouting",
-      image: "https://via.placeholder.com/60",
-    },
-  ];
+  // Filter the hunters based on search term
+  const filteredHunters = hunters.filter(
+    (hunter) =>
+      hunter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      hunter.nickname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      hunter.nationality.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  // Sort handlers
-  const toggleSort = (key) => {
-    if (sortKey === key) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortKey(key);
-      setSortOrder("asc");
-    }
-  };
-
-  // Rank order mapping for proper sorting
-  const rankOrder = { S: 0, A: 1, B: 2, C: 3, D: 4, E: 5 };
-
-  // Filter and sort hunters
-  const filteredAndSortedHunters = [...hunters]
-    .filter(
-      (hunter) =>
-        hunter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hunter.association.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        hunter.specialization.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortKey === "rank") {
-        return sortOrder === "asc"
-          ? rankOrder[a.rank] - rankOrder[b.rank]
-          : rankOrder[b.rank] - rankOrder[a.rank];
-      } else {
-        const aValue = a[sortKey].toLowerCase();
-        const bValue = b[sortKey].toLowerCase();
-        return sortOrder === "asc"
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
-    });
-
-  // Get hunter details
+  // Select a hunter to display details
   const handleHunterSelect = (hunter) => {
-    if (selectedHunter && selectedHunter.id === hunter.id) {
-      setSelectedHunter(null);
-    } else {
-      setSelectedHunter(hunter);
-    }
+    setSelectedHunter(hunter);
   };
 
-  // Render rank with star
-  const renderRank = (rank) => {
-    const rankColors = {
-      S: "text-yellow-500",
-      A: "text-blue-500",
-      B: "text-green-500",
-      C: "text-purple-500",
-      D: "text-orange-500",
-      E: "text-gray-500",
-    };
-
-    return (
-      <div className="flex items-center">
-        <FaStar className={`mr-1 ${rankColors[rank]}`} />
-        <span className="font-bold">{rank}</span>
-      </div>
-    );
+  // Get color based on rank
+  const getRankColor = (rank) => {
+    switch (rank) {
+      case "S+":
+        return "bg-red-900 text-red-200 border-red-700";
+      case "S":
+        return "bg-orange-900 text-orange-200 border-orange-700";
+      case "A":
+        return "bg-yellow-900 text-yellow-200 border-yellow-700";
+      case "B":
+        return "bg-green-900 text-green-200 border-green-700";
+      case "C":
+        return "bg-blue-900 text-blue-200 border-blue-700";
+      case "D":
+        return "bg-indigo-900 text-indigo-200 border-indigo-700";
+      case "E":
+        return "bg-purple-900 text-purple-200 border-purple-700";
+      default:
+        return "bg-gray-800 text-gray-200 border-gray-700";
+    }
   };
 
   return (
-    <section id="hunters" className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
-          >
-            Hunter Database
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg text-gray-600 max-w-2xl mx-auto"
-          >
-            Browse through the most powerful hunters in the Solo Leveling
-            universe. From the weakest E-rank to the legendary S-rank hunters.
-          </motion.p>
+    <div className="py-8 px-4 bg-gray-900">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-2xl font-bold text-gray-100 mb-4">
+          Hunters Database
+        </h2>
+        <div className="relative w-full md:w-96 mb-6">
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
+          <input
+            type="text"
+            placeholder="Search hunters by name, nickname or nationality..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-700 rounded-lg bg-gray-800 text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-600"
+          />
         </div>
 
-        {/* Search Bar */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="mb-8 max-w-md mx-auto"
-        >
-          <div className="relative">
-            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search hunters..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full py-3 pl-10 pr-4 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
-            />
-          </div>
-        </motion.div>
-
-        {/* Hunters Table */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-          className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden"
-        >
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Hunter
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
-                    onClick={() => toggleSort("rank")}
-                  >
-                    <div className="flex items-center">
-                      Rank
-                      {sortKey === "rank" && (
-                        <span className="ml-1">
-                          {sortOrder === "asc" ? (
-                            <FaChevronUp />
-                          ) : (
-                            <FaChevronDown />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden md:table-cell"
-                    onClick={() => toggleSort("association")}
-                  >
-                    <div className="flex items-center">
-                      Association
-                      {sortKey === "association" && (
-                        <span className="ml-1">
-                          {sortOrder === "asc" ? (
-                            <FaChevronUp />
-                          ) : (
-                            <FaChevronDown />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hidden lg:table-cell"
-                    onClick={() => toggleSort("specialization")}
-                  >
-                    <div className="flex items-center">
-                      Specialization
-                      {sortKey === "specialization" && (
-                        <span className="ml-1">
-                          {sortOrder === "asc" ? (
-                            <FaChevronUp />
-                          ) : (
-                            <FaChevronDown />
-                          )}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredAndSortedHunters.map((hunter) => (
-                  <motion.tr
-                    key={hunter.id}
-                    className={`cursor-pointer hover:bg-gray-50 transition-colors ${
-                      selectedHunter?.id === hunter.id ? "bg-primary-50" : ""
-                    }`}
-                    onClick={() => handleHunterSelect(hunter)}
-                    whileHover={{ backgroundColor: "rgba(243, 244, 246, 1)" }}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Hunters List */}
+          <div className="lg:col-span-1 bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+            <div className="p-4 border-b border-gray-700 bg-gray-900">
+              <h3 className="font-bold text-lg text-gray-100">
+                Registered Hunters
+              </h3>
+              <p className="text-sm text-gray-400">
+                Select a hunter to view details
+              </p>
+            </div>
+            <div className="overflow-y-auto" style={{ maxHeight: "480px" }}>
+              {filteredHunters.length > 0 ? (
+                <ul className="divide-y divide-gray-700">
+                  {filteredHunters.map((hunter) => (
+                    <motion.li
+                      key={hunter.id}
+                      className={`p-3 cursor-pointer transition-colors hover:bg-gray-700 ${
+                        selectedHunter?.id === hunter.id ? "bg-gray-700" : ""
+                      }`}
+                      onClick={() => handleHunterSelect(hunter)}
+                      whileHover={{ x: 3 }}
+                    >
                       <div className="flex items-center">
-                        <div className="h-12 w-12 flex-shrink-0 rounded-full overflow-hidden bg-gray-100">
-                          <img
-                            src={hunter.image}
-                            alt={hunter.name}
-                            className="h-full w-full object-cover"
-                          />
+                        <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden">
+                          {hunter.img ? (
+                            <img
+                              src={hunter.img}
+                              alt={hunter.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <FaUser className="text-gray-400" />
+                          )}
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                        <div className="ml-3">
+                          <div className="font-medium text-gray-100">
                             {hunter.name}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            {hunter.nickname} • {hunter.nationality}
+                          </div>
+                        </div>
+                        <div className="ml-auto">
+                          <span
+                            className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${getRankColor(
+                              hunter.rank
+                            )}`}
+                          >
+                            {hunter.rank}
+                          </span>
+                        </div>
+                      </div>
+                    </motion.li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-8">
+                  <FaSearch className="text-gray-600 text-4xl mb-2" />
+                  <p className="text-gray-400">
+                    No hunters found matching your search
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Hunter Details */}
+          <div className="lg:col-span-2 bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+            {selectedHunter ? (
+              <div className="flex flex-col h-full">
+                <div className="p-4 border-b border-gray-700 bg-gray-900 flex justify-between items-center">
+                  <h3 className="font-bold text-lg text-gray-100">
+                    Hunter Profile
+                  </h3>
+                  <span
+                    className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${getRankColor(
+                      selectedHunter.rank
+                    )}`}
+                  >
+                    {selectedHunter.rank} Rank
+                  </span>
+                </div>
+                <div className="p-6 flex-grow">
+                  <div className="flex flex-col md:flex-row gap-6 mb-6">
+                    <div className="w-full md:w-1/3 flex justify-center">
+                      <div className="w-48 h-48 rounded-lg bg-gray-700 overflow-hidden shadow-md border border-gray-700">
+                        {selectedHunter.img ? (
+                          <img
+                            src={selectedHunter.img}
+                            alt={selectedHunter.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <FaUser className="text-gray-500 text-6xl" />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="w-full md:w-2/3">
+                      <h2 className="text-2xl font-bold text-gray-100 mb-1">
+                        {selectedHunter.name}
+                      </h2>
+                      <p className="text-gray-400 text-lg mb-4">
+                        "{selectedHunter.nickname}"
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="flex items-center">
+                          <FaUser className="text-gray-500 mr-2" />
+                          <div>
+                            <p className="text-sm text-gray-400">Nationality</p>
+                            <p className="text-gray-200">
+                              {selectedHunter.nationality}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <FaShieldAlt className="text-gray-500 mr-2" />
+                          <div>
+                            <p className="text-sm text-gray-400">Association</p>
+                            <p className="text-gray-200">
+                              {selectedHunter.association}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <FaStar className="text-gray-500 mr-2" />
+                          <div>
+                            <p className="text-sm text-gray-400">Power</p>
+                            <p className="text-gray-200">
+                              {selectedHunter.power}
+                            </p>
                           </div>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {renderRank(hunter.rank)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                      <div className="text-sm text-gray-700">
-                        {hunter.association}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
-                      <div className="text-sm text-gray-700">
-                        {hunter.specialization}
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
+                  </div>
+
+                  <div className="mt-6">
+                    <h4 className="text-lg font-semibold text-gray-100 mb-2">
+                      Biography
+                    </h4>
+                    <p className="text-gray-300 leading-relaxed">
+                      {selectedHunter.bio}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full p-12 text-center">
+                <FaUser className="text-gray-700 text-6xl mb-4" />
+                <h3 className="text-xl font-medium text-gray-400 mb-2">
+                  No Hunter Selected
+                </h3>
+                <p className="text-gray-500 max-w-md">
+                  Select a hunter from the list to view their detailed profile
+                  and stats
+                </p>
+              </div>
+            )}
           </div>
-
-          {/* No results message */}
-          {filteredAndSortedHunters.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-gray-500">
-                No hunters found matching your search criteria.
-              </p>
-            </div>
-          )}
-        </motion.div>
-
-        {/* Hunter Details Panel */}
-        {selectedHunter && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-            className="mt-8 bg-white rounded-xl shadow-sm border border-gray-200 p-6"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">
-                {selectedHunter.name}
-              </h3>
-              <button
-                onClick={() => setSelectedHunter(null)}
-                className="text-gray-400 hover:text-gray-600"
-                aria-label="Close details"
-              >
-                <FaChevronUp />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="flex items-center">
-                <span className="font-medium text-gray-500 mr-2">Rank:</span>
-                {renderRank(selectedHunter.rank)}
-              </div>
-              <div>
-                <span className="font-medium text-gray-500">Association:</span>
-                <p className="text-gray-700">{selectedHunter.association}</p>
-              </div>
-              <div>
-                <span className="font-medium text-gray-500">
-                  Specialization:
-                </span>
-                <p className="text-gray-700">{selectedHunter.specialization}</p>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <span className="font-medium text-gray-500">Biography:</span>
-              <p className="mt-2 text-gray-700">
-                {selectedHunter.id === 1
-                  ? "Sung Jin-Woo started as the world's weakest E-rank hunter, known as 'the weakest hunter of all mankind'. After a near-death experience in a double dungeon, he gained the mysterious 'System', allowing him to level up and gain strength beyond other hunters."
-                  : "A renowned hunter known for their exceptional abilities and contributions to protecting humanity from the threats of the gates and dungeons."}
-              </p>
-            </div>
-          </motion.div>
-        )}
+        </div>
       </div>
-    </section>
+    </div>
   );
 };
 

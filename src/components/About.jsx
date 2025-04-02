@@ -10,7 +10,7 @@ const About = () => {
         "Mysterious portals that connect our world to dangerous dungeons full of monsters. They first appeared 10 years ago, completely changing the world order.",
     },
     {
-      icon: <FaShieldAlt className="text-primary-600 text-3xl" />,
+      icon: <FaShieldAlt className="text-primary-500 text-3xl" />,
       title: "Hunters",
       description:
         "Individuals with special abilities who can enter gates and fight monsters. Ranked from E to S, they are the only ones who can protect humanity.",
@@ -26,12 +26,12 @@ const About = () => {
   return (
     <section
       id="about"
-      className="py-16 px-4 bg-white border-t border-gray-100"
+      className="py-16 px-4 bg-gray-900 border-t border-gray-800"
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <motion.h2
-            className="text-3xl font-bold mb-4 text-gray-900"
+            className="text-3xl font-bold mb-4 text-gray-100"
             initial={{ opacity: 0, y: -10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -40,7 +40,7 @@ const About = () => {
             About Solo Leveling
           </motion.h2>
           <motion.p
-            className="text-gray-600 max-w-3xl mx-auto"
+            className="text-gray-300 max-w-3xl mx-auto"
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
@@ -57,32 +57,32 @@ const About = () => {
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-gray-200 transition-all"
+              className="bg-gray-800 p-6 rounded-xl shadow-md border border-gray-700 hover:border-gray-600 transition-all dark-card"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
               whileHover={{
                 y: -4,
-                boxShadow: "0 12px 24px -8px rgba(0, 0, 0, 0.05)",
+                boxShadow: "0 12px 24px -8px rgba(0, 0, 0, 0.2)",
               }}
               viewport={{ once: true }}
             >
-              <div className="mb-4 p-2 inline-block bg-gray-50 rounded-lg">
+              <div className="mb-4 p-2 inline-block bg-gray-900 rounded-lg">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-gray-900">
+              <h3 className="text-xl font-semibold mb-3 text-gray-100">
                 {feature.title}
               </h3>
-              <p className="text-gray-600">{feature.description}</p>
+              <p className="text-gray-300">{feature.description}</p>
             </motion.div>
           ))}
         </div>
 
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+        <div className="bg-gradient-to-r from-gray-800 to-gray-900 p-8 md:p-12 rounded-2xl shadow-md border border-gray-700 dark-card">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             <div>
               <motion.h3
-                className="text-2xl md:text-3xl font-bold mb-4 text-gray-900"
+                className="text-2xl md:text-3xl font-bold mb-4 text-gray-100"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4 }}
@@ -91,7 +91,7 @@ const About = () => {
                 "I'll clear this game-like world."
               </motion.h3>
               <motion.p
-                className="mb-6 text-gray-600"
+                className="mb-6 text-gray-300"
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 }}
@@ -109,10 +109,10 @@ const About = () => {
                 transition={{ duration: 0.4, delay: 0.2 }}
                 viewport={{ once: true }}
               >
-                <p className="text-sm text-gray-600 italic">
+                <p className="text-sm text-gray-400 italic">
                   "I don't want to be someone who just survives within this
                   world anymore. I want to rule over it."
-                  <span className="block mt-2 font-semibold">
+                  <span className="block mt-2 font-semibold text-gray-300">
                     — Sung Jin-Woo
                   </span>
                 </p>
@@ -120,15 +120,15 @@ const About = () => {
             </div>
 
             <motion.div
-              className="bg-white bg-opacity-40 h-64 rounded-xl shadow-sm border border-gray-200 flex items-center justify-center overflow-hidden"
+              className="bg-gray-800 bg-opacity-80 h-64 rounded-xl shadow-md border border-gray-700 flex items-center justify-center overflow-hidden glow-sm"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.4 }}
               viewport={{ once: true }}
             >
               <div className="relative w-full h-full flex items-center justify-center">
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary-500/5 to-secondary-500/5"></div>
-                <span className="text-gray-500 relative z-10">
+                <div className="absolute inset-0 bg-gradient-to-tr from-primary-900/20 to-secondary-900/20"></div>
+                <span className="text-gray-400 relative z-10">
                   Jin-Woo Image
                 </span>
               </div>
