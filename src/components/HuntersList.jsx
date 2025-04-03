@@ -134,7 +134,7 @@ const HuntersList = () => {
   };
 
   return (
-    <div className="py-8 px-4 bg-gray-900">
+    <div id="hunters" className="py-8 px-4 bg-gray-900">
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl font-bold text-gray-100 mb-4">
           Hunters Database
