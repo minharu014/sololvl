@@ -182,7 +182,12 @@ const HuntersList = () => {
                               className="h-full w-full object-cover"
                             />
                           ) : (
-                            <FaUser className="text-gray-400" />
+                            <span className="text-gray-400 font-bold text-sm">
+                              {hunter.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </span>
                           )}
                         </div>
                         <div className="ml-3">
@@ -245,7 +250,12 @@ const HuntersList = () => {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <FaUser className="text-gray-500 text-6xl" />
+                            <span className="text-gray-500 font-bold text-4xl">
+                              {selectedHunter.name
+                                .split(" ")
+                                .map((n) => n[0])
+                                .join("")}
+                            </span>
                           </div>
                         )}
                       </div>
