@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaSkull, FaShieldAlt, FaBolt } from "react-icons/fa";
 import { GiSwordman } from "react-icons/gi";
 
@@ -78,6 +78,40 @@ const ShadowsList = () => {
     }
   };
 
+  // Animation variants for the details panel
+  const detailsVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.98,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 24,
+        duration: 0.4,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -10,
+      transition: { duration: 0.2 },
+    },
+  };
+
+  // Animation variants for the shadow list items
+  const listItemVariants = {
+    hover: {
+      x: 5,
+      backgroundColor: "rgba(55, 65, 81, 1)",
+      transition: { type: "spring", stiffness: 400, damping: 10 },
+    },
+  };
+
   return (
     <div id="shadows" className="py-8 px-4 bg-gray-900">
       <div className="max-w-7xl mx-auto">
@@ -114,7 +148,9 @@ const ShadowsList = () => {
                         selectedShadow?.id === shadow.id ? "bg-gray-700" : ""
                       }`}
                       onClick={() => handleShadowSelect(shadow)}
-                      whileHover={{ x: 3 }}
+                      variants={listItemVariants}
+                      whileHover="hover"
+                      layout
                     >
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden">
@@ -160,89 +196,140 @@ const ShadowsList = () => {
             </div>
           </div>
 
-          {/* Shadow Details */}
+          {/* Shadow Details with Animation */}
           <div className="lg:col-span-2 bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
-            {selectedShadow ? (
-              <div className="flex flex-col h-full">
-                <div className="p-4 border-b border-gray-700 bg-gray-900 flex justify-between items-center">
-                  <h3 className="font-bold text-lg text-gray-100">
-                    Shadow Profile
-                  </h3>
-                  <span
-                    className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${getRankColor(
-                      selectedShadow.rank
-                    )}`}
+            <AnimatePresence mode="wait">
+              {selectedShadow ? (
+                <motion.div
+                  key={selectedShadow.id}
+                  className="flex flex-col h-full"
+                  variants={detailsVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <div className="p-4 border-b border-gray-700 bg-gray-900 flex justify-between items-center">
+                    <h3 className="font-bold text-lg text-gray-100">
+                      Shadow Profile
+                    </h3>
+                    <span
+                      className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${getRankColor(
+                        selectedShadow.rank
+                      )}`}
+                    >
+                      {selectedShadow.rank}
+                    </span>
+                  </div>
+                  <motion.div
+                    className="p-6 flex-grow"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
                   >
-                    {selectedShadow.rank}
-                  </span>
-                </div>
-                <div className="p-6 flex-grow">
-                  <div className="flex flex-col md:flex-row gap-6 mb-6">
-                    <div className="w-full md:w-1/3 flex justify-center">
-                      <div className="w-48 h-48 rounded-lg bg-gray-700 overflow-hidden shadow-md border border-gray-700">
-                        {selectedShadow.img ? (
-                          <img
-                            src={selectedShadow.img}
-                            alt={selectedShadow.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <FaSkull className="text-gray-500 text-6xl" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="w-full md:w-2/3">
-                      <h2 className="text-2xl font-bold text-gray-100 mb-1">
-                        {selectedShadow.name}
-                      </h2>
-                      <p className="text-gray-400 text-sm mb-4">
-                        Originally: {selectedShadow.origin}
-                      </p>
-
-                      <div className="grid grid-cols-1 gap-4">
-                        <div className="flex items-start">
-                          <FaBolt className="text-gray-500 mr-2 mt-1" />
-                          <div>
-                            <p className="text-sm text-gray-400">Abilities</p>
-                            <p className="text-gray-200">
-                              {selectedShadow.abilities}
-                            </p>
-                          </div>
+                    <div className="flex flex-col md:flex-row gap-6 mb-6">
+                      <motion.div
+                        className="w-full md:w-1/3 flex justify-center"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.2, type: "spring" }}
+                      >
+                        <div className="w-48 h-48 rounded-lg bg-gray-700 overflow-hidden shadow-md border border-gray-700">
+                          {selectedShadow.img ? (
+                            <img
+                              src={selectedShadow.img}
+                              alt={selectedShadow.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <FaSkull className="text-gray-500 text-6xl" />
+                            </div>
+                          )}
                         </div>
+                      </motion.div>
+                      <div className="w-full md:w-2/3">
+                        <motion.h2
+                          className="text-2xl font-bold text-gray-100 mb-1"
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.3 }}
+                        >
+                          {selectedShadow.name}
+                        </motion.h2>
+                        <motion.p
+                          className="text-gray-400 text-sm mb-4"
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.4 }}
+                        >
+                          Originally: {selectedShadow.origin}
+                        </motion.p>
+
+                        <motion.div
+                          className="grid grid-cols-1 gap-4"
+                          initial={{ y: 20, opacity: 0 }}
+                          animate={{ y: 0, opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                        >
+                          <div className="flex items-start">
+                            <FaBolt className="text-gray-500 mr-2 mt-1" />
+                            <div>
+                              <p className="text-sm text-gray-400">Abilities</p>
+                              <p className="text-gray-200">
+                                {selectedShadow.abilities}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="mt-6">
-                    <h4 className="text-lg font-semibold text-gray-100 mb-2">
-                      Description
-                    </h4>
-                    <p className="text-gray-300 leading-relaxed">
-                      {selectedShadow.description}
-                    </p>
-
-                    <div className="mt-4 p-3 bg-gray-900 rounded-lg border border-gray-700">
-                      <p className="text-xs text-gray-400 italic">
-                        "Arise." — Sung Jin-Woo, Shadow Monarch
+                    <motion.div
+                      className="mt-6"
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                    >
+                      <h4 className="text-lg font-semibold text-gray-100 mb-2">
+                        Description
+                      </h4>
+                      <p className="text-gray-300 leading-relaxed">
+                        {selectedShadow.description}
                       </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full p-12 text-center">
-                <FaSkull className="text-gray-700 text-6xl mb-4" />
-                <h3 className="text-xl font-medium text-gray-400 mb-2">
-                  No Shadow Selected
-                </h3>
-                <p className="text-gray-500 max-w-md">
-                  Select a shadow from the list to view its detailed profile and
-                  abilities
-                </p>
-              </div>
-            )}
+
+                      <motion.div
+                        className="mt-4 p-3 bg-gray-900 rounded-lg border border-gray-700"
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.7 }}
+                      >
+                        <p className="text-xs text-gray-400 italic">
+                          "Arise." — Sung Jin-Woo, Shadow Monarch
+                        </p>
+                      </motion.div>
+                    </motion.div>
+                  </motion.div>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  className="flex flex-col items-center justify-center h-full p-12 text-center"
+                  variants={detailsVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <FaSkull className="text-gray-700 text-6xl mb-4" />
+                  <h3 className="text-xl font-medium text-gray-400 mb-2">
+                    No Shadow Selected
+                  </h3>
+                  <p className="text-gray-500 max-w-md">
+                    Select a shadow from the list to view its detailed profile
+                    and abilities
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
