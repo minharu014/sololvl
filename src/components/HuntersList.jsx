@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaSearch, FaShieldAlt, FaUser, FaStar } from "react-icons/fa";
 
 // Hunter data array
@@ -133,6 +133,31 @@ const HuntersList = () => {
     }
   };
 
+  // Animation variants for the details panel
+  const detailsVariants = {
+    hidden: {
+      opacity: 0,
+      y: 20,
+      scale: 0.98,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 24,
+        duration: 0.4,
+      },
+    },
+    exit: {
+      opacity: 0,
+      y: -10,
+      transition: { duration: 0.2 },
+    },
+  };
+
   return (
     <div id="hunters" className="py-8 px-4 bg-gray-900">
       <div className="max-w-7xl mx-auto">
@@ -222,106 +247,126 @@ const HuntersList = () => {
             </div>
           </div>
 
-          {/* Hunter Details */}
+          {/* Hunter Details with Animation */}
           <div className="lg:col-span-2 bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
-            {selectedHunter ? (
-              <div className="flex flex-col h-full">
-                <div className="p-4 border-b border-gray-700 bg-gray-900 flex justify-between items-center">
-                  <h3 className="font-bold text-lg text-gray-100">
-                    Hunter Profile
-                  </h3>
-                  <span
-                    className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${getRankColor(
-                      selectedHunter.rank
-                    )}`}
-                  >
-                    {selectedHunter.rank} Rank
-                  </span>
-                </div>
-                <div className="p-6 flex-grow">
-                  <div className="flex flex-col md:flex-row gap-6 mb-6">
-                    <div className="w-full md:w-1/3 flex justify-center">
-                      <div className="w-48 h-48 rounded-lg bg-gray-700 overflow-hidden shadow-md border border-gray-700">
-                        {selectedHunter.img ? (
-                          <img
-                            src={selectedHunter.img}
-                            alt={selectedHunter.name}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-gray-500 font-bold text-4xl">
-                              {selectedHunter.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </span>
+            <AnimatePresence mode="wait">
+              {selectedHunter ? (
+                <motion.div
+                  key={selectedHunter.id}
+                  className="flex flex-col h-full"
+                  variants={detailsVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <div className="p-4 border-b border-gray-700 bg-gray-900 flex justify-between items-center">
+                    <h3 className="font-bold text-lg text-gray-100">
+                      Hunter Profile
+                    </h3>
+                    <span
+                      className={`inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-full ${getRankColor(
+                        selectedHunter.rank
+                      )}`}
+                    >
+                      {selectedHunter.rank} Rank
+                    </span>
+                  </div>
+                  <div className="p-6 flex-grow">
+                    <div className="flex flex-col md:flex-row gap-6 mb-6">
+                      <div className="w-full md:w-1/3 flex justify-center">
+                        <div className="w-48 h-48 rounded-lg bg-gray-700 overflow-hidden shadow-md border border-gray-700">
+                          {selectedHunter.img ? (
+                            <img
+                              src={selectedHunter.img}
+                              alt={selectedHunter.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <span className="text-gray-500 font-bold text-4xl">
+                                {selectedHunter.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-full md:w-2/3">
+                        <h2 className="text-2xl font-bold text-gray-100 mb-1">
+                          {selectedHunter.name}
+                        </h2>
+                        <p className="text-gray-400 text-lg mb-4">
+                          "{selectedHunter.nickname}"
+                        </p>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="flex items-center">
+                            <FaUser className="text-gray-500 mr-2" />
+                            <div>
+                              <p className="text-sm text-gray-400">
+                                Nationality
+                              </p>
+                              <p className="text-gray-200">
+                                {selectedHunter.nationality}
+                              </p>
+                            </div>
                           </div>
-                        )}
+                          <div className="flex items-center">
+                            <FaShieldAlt className="text-gray-500 mr-2" />
+                            <div>
+                              <p className="text-sm text-gray-400">
+                                Association
+                              </p>
+                              <p className="text-gray-200">
+                                {selectedHunter.association}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center">
+                            <FaStar className="text-gray-500 mr-2" />
+                            <div>
+                              <p className="text-sm text-gray-400">Power</p>
+                              <p className="text-gray-200">
+                                {selectedHunter.power}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="w-full md:w-2/3">
-                      <h2 className="text-2xl font-bold text-gray-100 mb-1">
-                        {selectedHunter.name}
-                      </h2>
-                      <p className="text-gray-400 text-lg mb-4">
-                        "{selectedHunter.nickname}"
+
+                    <div className="mt-6">
+                      <h4 className="text-lg font-semibold text-gray-100 mb-2">
+                        Biography
+                      </h4>
+                      <p className="text-gray-300 leading-relaxed">
+                        {selectedHunter.bio}
                       </p>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="flex items-center">
-                          <FaUser className="text-gray-500 mr-2" />
-                          <div>
-                            <p className="text-sm text-gray-400">Nationality</p>
-                            <p className="text-gray-200">
-                              {selectedHunter.nationality}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <FaShieldAlt className="text-gray-500 mr-2" />
-                          <div>
-                            <p className="text-sm text-gray-400">Association</p>
-                            <p className="text-gray-200">
-                              {selectedHunter.association}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex items-center">
-                          <FaStar className="text-gray-500 mr-2" />
-                          <div>
-                            <p className="text-sm text-gray-400">Power</p>
-                            <p className="text-gray-200">
-                              {selectedHunter.power}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
                     </div>
                   </div>
-
-                  <div className="mt-6">
-                    <h4 className="text-lg font-semibold text-gray-100 mb-2">
-                      Biography
-                    </h4>
-                    <p className="text-gray-300 leading-relaxed">
-                      {selectedHunter.bio}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full p-12 text-center">
-                <FaUser className="text-gray-700 text-6xl mb-4" />
-                <h3 className="text-xl font-medium text-gray-400 mb-2">
-                  No Hunter Selected
-                </h3>
-                <p className="text-gray-500 max-w-md">
-                  Select a hunter from the list to view their detailed profile
-                  and stats
-                </p>
-              </div>
-            )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="empty"
+                  className="flex flex-col items-center justify-center h-full p-12 text-center"
+                  variants={detailsVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <FaUser className="text-gray-700 text-6xl mb-4" />
+                  <h3 className="text-xl font-medium text-gray-400 mb-2">
+                    No Hunter Selected
+                  </h3>
+                  <p className="text-gray-500 max-w-md">
+                    Select a hunter from the list to view their detailed profile
+                    and stats
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
