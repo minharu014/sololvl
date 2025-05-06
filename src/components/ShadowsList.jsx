@@ -78,7 +78,7 @@ const ShadowsList = () => {
     }
   };
 
-  // Animation variants for the details panel
+  // Simple animation variants for the details panel
   const detailsVariants = {
     hidden: {
       opacity: 0,
@@ -100,15 +100,6 @@ const ShadowsList = () => {
       opacity: 0,
       y: -10,
       transition: { duration: 0.2 },
-    },
-  };
-
-  // Animation variants for the shadow list items
-  const listItemVariants = {
-    hover: {
-      x: 5,
-      backgroundColor: "rgba(55, 65, 81, 1)",
-      transition: { type: "spring", stiffness: 400, damping: 10 },
     },
   };
 
@@ -138,7 +129,10 @@ const ShadowsList = () => {
                 Select a shadow to view details
               </p>
             </div>
-            <div className="overflow-y-auto" style={{ maxHeight: "480px" }}>
+            <div
+              className="overflow-y-auto overflow-x-hidden"
+              style={{ maxHeight: "480px" }}
+            >
               {filteredShadows.length > 0 ? (
                 <ul className="divide-y divide-gray-700">
                   {filteredShadows.map((shadow) => (
@@ -148,9 +142,7 @@ const ShadowsList = () => {
                         selectedShadow?.id === shadow.id ? "bg-gray-700" : ""
                       }`}
                       onClick={() => handleShadowSelect(shadow)}
-                      variants={listItemVariants}
-                      whileHover="hover"
-                      layout
+                      whileHover={{ x: 3 }}
                     >
                       <div className="flex items-center">
                         <div className="h-10 w-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden">
@@ -220,19 +212,9 @@ const ShadowsList = () => {
                       {selectedShadow.rank}
                     </span>
                   </div>
-                  <motion.div
-                    className="p-6 flex-grow"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                  >
+                  <div className="p-6 flex-grow">
                     <div className="flex flex-col md:flex-row gap-6 mb-6">
-                      <motion.div
-                        className="w-full md:w-1/3 flex justify-center"
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, type: "spring" }}
-                      >
+                      <div className="w-full md:w-1/3 flex justify-center">
                         <div className="w-48 h-48 rounded-lg bg-gray-700 overflow-hidden shadow-md border border-gray-700">
                           {selectedShadow.img ? (
                             <img
@@ -246,31 +228,16 @@ const ShadowsList = () => {
                             </div>
                           )}
                         </div>
-                      </motion.div>
+                      </div>
                       <div className="w-full md:w-2/3">
-                        <motion.h2
-                          className="text-2xl font-bold text-gray-100 mb-1"
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.3 }}
-                        >
+                        <h2 className="text-2xl font-bold text-gray-100 mb-1">
                           {selectedShadow.name}
-                        </motion.h2>
-                        <motion.p
-                          className="text-gray-400 text-sm mb-4"
-                          initial={{ x: -20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: 0.4 }}
-                        >
+                        </h2>
+                        <p className="text-gray-400 text-sm mb-4">
                           Originally: {selectedShadow.origin}
-                        </motion.p>
+                        </p>
 
-                        <motion.div
-                          className="grid grid-cols-1 gap-4"
-                          initial={{ y: 20, opacity: 0 }}
-                          animate={{ y: 0, opacity: 1 }}
-                          transition={{ delay: 0.5 }}
-                        >
+                        <div className="grid grid-cols-1 gap-4">
                           <div className="flex items-start">
                             <FaBolt className="text-gray-500 mr-2 mt-1" />
                             <div>
@@ -280,16 +247,11 @@ const ShadowsList = () => {
                               </p>
                             </div>
                           </div>
-                        </motion.div>
+                        </div>
                       </div>
                     </div>
 
-                    <motion.div
-                      className="mt-6"
-                      initial={{ y: 30, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{ delay: 0.6 }}
-                    >
+                    <div className="mt-6">
                       <h4 className="text-lg font-semibold text-gray-100 mb-2">
                         Description
                       </h4>
@@ -297,18 +259,13 @@ const ShadowsList = () => {
                         {selectedShadow.description}
                       </p>
 
-                      <motion.div
-                        className="mt-4 p-3 bg-gray-900 rounded-lg border border-gray-700"
-                        initial={{ y: 20, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ delay: 0.7 }}
-                      >
+                      <div className="mt-4 p-3 bg-gray-900 rounded-lg border border-gray-700">
                         <p className="text-xs text-gray-400 italic">
                           "Arise." — Sung Jin-Woo, Shadow Monarch
                         </p>
-                      </motion.div>
-                    </motion.div>
-                  </motion.div>
+                      </div>
+                    </div>
+                  </div>
                 </motion.div>
               ) : (
                 <motion.div

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -12,7 +12,6 @@ import {
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import locations from "../data/locations";
-import { FaFilter } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 // Fix for default marker icons in Leaflet with webpack
@@ -65,11 +64,59 @@ const ChangeMapView = ({ center, zoom }) => {
   return null;
 };
 
+// Add component that listens for gate selection
+const GateSelectionListener = ({ setMapCenter, setMapZoom }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    // listen for gate selection event
+    const handleGateSelected = (event) => {
+      const { lat, lng, id } = event.detail;
+      map.setView([lat, lng], 10); // zoom to selected gate
+
+      // find the marker for this gate and open its popup
+      const selectedGate = locations.find((location) => location.id === id);
+      if (selectedGate) {
+        // update the parent component state to reflect new center
+        setMapCenter([lat, lng]);
+        setMapZoom(10);
+
+        // find the gate marker and open its popup
+        setTimeout(() => {
+          const markers = document.querySelectorAll(".leaflet-marker-icon");
+          markers.forEach((marker) => {
+            const markerPosition = marker._leaflet_pos;
+            if (markerPosition) {
+              const point = L.point(markerPosition.x, markerPosition.y);
+              const latLng = map.containerPointToLatLng(point);
+              if (
+                Math.abs(latLng.lat - lat) < 0.001 &&
+                Math.abs(latLng.lng - lng) < 0.001
+              ) {
+                marker.click();
+              }
+            }
+          });
+        }, 100);
+      }
+    };
+
+    window.addEventListener("gateSelected", handleGateSelected);
+
+    return () => {
+      window.removeEventListener("gateSelected", handleGateSelected);
+    };
+  }, [map, setMapCenter, setMapZoom]);
+
+  return null;
+};
+
 const HuntersMap = () => {
   const [mapCenter, setMapCenter] = useState([38.0, 129.0]); // Between Korea and Japan
   const [mapZoom, setMapZoom] = useState(4);
   const [countryFilter, setCountryFilter] = useState("all");
   const [rankFilter, setRankFilter] = useState("all");
+  const mapRef = useRef(null);
 
   // Filter locations based on selected country and rank
   const filteredLocations = locations.filter((location) => {
@@ -228,6 +275,7 @@ const HuntersMap = () => {
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
         zoomControl={false}
+        ref={mapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -237,6 +285,10 @@ const HuntersMap = () => {
 
         <ZoomControl position="bottomright" />
         <ChangeMapView center={mapCenter} zoom={mapZoom} />
+        <GateSelectionListener
+          setMapCenter={setMapCenter}
+          setMapZoom={setMapZoom}
+        />
 
         <LayerGroup>
           {filteredLocations.map((location) => (

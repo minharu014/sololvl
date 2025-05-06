@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaGithub, FaTwitter, FaDiscord } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaDiscord } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -48,7 +48,7 @@ const Footer = () => {
                 whileHover={{ scale: 1.1 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
-                <FaTwitter />
+                <FaLinkedin />
               </motion.a>
               <motion.a
                 href="#"

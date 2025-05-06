@@ -186,7 +186,10 @@ const HuntersList = () => {
                 Select a hunter to view details
               </p>
             </div>
-            <div className="overflow-y-auto" style={{ maxHeight: "480px" }}>
+            <div
+              className="overflow-y-auto overflow-x-hidden"
+              style={{ maxHeight: "480px" }}
+            >
               {filteredHunters.length > 0 ? (
                 <ul className="divide-y divide-gray-700">
                   {filteredHunters.map((hunter) => (

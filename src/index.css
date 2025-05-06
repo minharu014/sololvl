@@ -549,3 +549,50 @@ h2 {
   outline: 2px solid var(--color-primary-500);
   outline-offset: 2px;
 }
+
+/* Add custom scrollbar styles */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(31, 41, 55, 0.5);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
+
+/* Dark mode map tiles */
+.map-tiles-dark {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+}
+
+/* Dark popup */
+.dark-popup .leaflet-popup-content-wrapper {
+  background-color: rgba(31, 41, 55, 0.95);
+  color: #e5e7eb;
+  border-radius: 6px;
+  border: 1px solid rgba(75, 85, 99, 0.5);
+}
+
+.dark-popup .leaflet-popup-tip {
+  background-color: rgba(31, 41, 55, 0.95);
+  border: 1px solid rgba(75, 85, 99, 0.5);
+}
+
+/* Gate item hover effect */
+.gate-item-hover {
+  transition: all 0.2s ease;
+}
+
+.gate-item-hover:hover {
+  transform: translateX(3px);
+  background-color: rgba(55, 65, 81, 0.7);
+}

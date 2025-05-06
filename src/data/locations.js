@@ -111,7 +111,17 @@ const locations = [
     source: "Solo Leveling Wiki",
     country: "South Korea",
   },
-
+  {
+    id: 23,
+    name: "Daegu A-Rank Gate",
+    description:
+      "Dungeon in Daegu that is known for its high level of difficulty and powerful monsters.",
+    rank: "A",
+    lat: 35.8714,
+    lng: 128.6014, // daegu
+    source: "Solo Leveling Wiki",
+    country: "South Korea",
+  },
   // Japan locations
   {
     id: 11,

@@ -15,11 +15,9 @@ const Home = () => {
       <div id="map" className="bg-gray-900 pt-4 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-6">
-            <h1 className="text-4xl font-bold text-gray-100">
-              Solo Leveling World
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-100">Solo Leveling</h1>
             <p className="text-xl text-gray-300 mt-2">
-              Explore the hunting grounds of South Korea and Japan
+              Japan+Korea leaflet map fan project for Solo Leveling
             </p>
           </div>
 
