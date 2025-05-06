@@ -204,7 +204,7 @@ const GatesList = () => {
         </div>
       </div>
 
-      <div className="overflow-y-auto flex-grow" style={{ maxHeight: "240px" }}>
+      <div className="overflow-y-auto flex-grow max-h-[320px]">
         {filteredGates.length > 0 ? (
           <ul className="divide-y divide-gray-700">
             {filteredGates.map((gate) => (

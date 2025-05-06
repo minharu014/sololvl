@@ -13,7 +13,7 @@ const shadows = [
     abilities: "Swordsmanship, Loyalty, Leadership",
     description:
       "A knight-type shadow and Jin-Woo's first high-ranking shadow. Originally the guardian of Cartenon Temple, Igris serves as Jin-Woo's most loyal soldier and the marshal of his shadow army. His exceptional swordsmanship makes him one of Jin-Woo's most valuable assets in battle.",
-    img: "https://i.imgur.com/pKQFGGK.png",
+    img: "https://static.beebom.com/wp-content/uploads/2025/01/Igris.jpg?w=1024",
   },
   {
     id: 2,
@@ -23,7 +23,7 @@ const shadows = [
     abilities: "Durability, Shield Defense, Taunt",
     description:
       "A heavy-set orc that specializes in defense. Tank was extracted during the incident at the Hunters Guild Gate and serves as a frontline defender for Jin-Woo's shadow army. His incredible durability makes him perfect for absorbing damage while other shadows attack.",
-    img: "https://i.imgur.com/DL3WH4j.png",
+    img: "https://www.anitrendz.com/_next/image?url=https%3A%2F%2Fi0.wp.com%2Fanitrendz.net%2Fnews%2Fwp-content%2Fuploads%2F2025%2F01%2Fsolo-leveling-season-2-tank-visual-e1737264518681.jpg%3Ffit%3D1458%252C822%26ssl%3D1&w=1920&q=75",
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const shadows = [
     abilities: "Berserker Rage, Brute Strength, War Cry",
     description:
       "Formerly a High Orc Chieftain, Tusk is a powerful offensive shadow with immense physical strength. Extracted during the High Orc dungeon raid, this shadow serves as one of Jin-Woo's primary damage dealers. In life, he led the High Orcs that caused significant casualties among hunters.",
-    img: "https://i.imgur.com/v0L2RDb.png",
+    img: "https://static1.cbrimages.com/wordpress/wp-content/uploads/2025/02/9965d76c-1775-4c8d-8daa-57f3f7e5c699.jpeg",
   },
   {
     id: 4,
@@ -43,7 +43,7 @@ const shadows = [
     abilities: "Regeneration, Flight, Energy Projection, Telepathy",
     description:
       "The Ant King from the Jeju Island S-Rank Gate, Beru is arguably Jin-Woo's most powerful shadow. With incredible combat abilities, regeneration, and flight, Beru can single-handedly defeat entire armies. His personality carries over after extraction, making him verbose and eager to please his master.",
-    img: "https://i.imgur.com/UwhdF92.png",
+    img: "https://makerworld.bblmw.com/makerworld/model/US25cf512d28d7ec/design/2024-09-07_e4919434496da.jpg?x-oss-process=image/resize,w_1000/format,webp",
   },
 ];
 

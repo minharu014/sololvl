@@ -1,5 +1,4 @@
 import Navbar from "../components/Navbar";
-import Hero from "../components/Hero";
 import HuntersMap from "../components/HuntersMap";
 import HuntersList from "../components/HuntersList";
 import GatesList from "../components/GatesList";
@@ -11,15 +10,26 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gray-900 text-gray-100">
       <Navbar />
-      <Hero />
-      <div id="map" className="bg-gray-900 py-4 px-4">
+
+      {/* Hero Map Section */}
+      <div id="map" className="bg-gray-900 pt-4 pb-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-100 mb-4">
-            Locations & Gates
-          </h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
-              <HuntersMap />
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-bold text-gray-100">
+              Solo Leveling World
+            </h1>
+            <p className="text-xl text-gray-300 mt-2">
+              Explore the hunting grounds of South Korea and Japan
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+            <div className="lg:col-span-3">
+              <div className="rounded-xl overflow-hidden shadow-lg border border-gray-700">
+                <div className="h-[550px] relative z-0">
+                  <HuntersMap />
+                </div>
+              </div>
             </div>
             <div className="lg:col-span-1">
               <GatesList />
@@ -27,6 +37,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+
       <HuntersList />
       <ShadowsList />
       <About />

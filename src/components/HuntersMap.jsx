@@ -7,11 +7,13 @@ import {
   useMap,
   LayerGroup,
   CircleMarker,
+  ZoomControl,
 } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import locations from "../data/locations";
 import { FaFilter } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 // Fix for default marker icons in Leaflet with webpack
 delete L.Icon.Default.prototype._getIconUrl;
@@ -47,10 +49,10 @@ const createRankIcon = (rank) => {
     className: "custom-div-icon",
     html: `<div style="background-color: ${getRankColor(
       rank
-    )}; color: white; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-weight: bold; box-shadow: 0 0 10px rgba(0,0,0,0.5);">${rank}</div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
-    popupAnchor: [0, -12],
+    )}; color: white; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-weight: bold; box-shadow: 0 0 10px rgba(0,0,0,0.5);">${rank}</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15],
+    popupAnchor: [0, -15],
   });
 };
 
@@ -64,8 +66,8 @@ const ChangeMapView = ({ center, zoom }) => {
 };
 
 const HuntersMap = () => {
-  const [mapCenter, setMapCenter] = useState([37.5665, 126.978]); // Seoul, South Korea
-  const [mapZoom, setMapZoom] = useState(5);
+  const [mapCenter, setMapCenter] = useState([38.0, 129.0]); // Between Korea and Japan
+  const [mapZoom, setMapZoom] = useState(4);
   const [countryFilter, setCountryFilter] = useState("all");
   const [rankFilter, setRankFilter] = useState("all");
 
@@ -167,35 +169,38 @@ const HuntersMap = () => {
   };
 
   return (
-    <div className="bg-gray-800 rounded-xl border border-gray-700 shadow-md overflow-hidden">
-      <div className="p-3 border-b border-gray-700 bg-gray-900">
-        <h3 className="text-lg font-bold text-gray-100 mb-2">
-          Hunter Association Map
-        </h3>
-        <p className="text-gray-300 text-sm mb-3">
-          Explore gate locations across East Asia
-        </p>
+    <>
+      <div className="absolute z-10 bg-gray-900/60 bg-opacity-90 p-1 rounded-xl border border-gray-700">
+        <div className="flex flex-wrap items-center gap-2">
+          <motion.div
+            className="flex items-center gap-1"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <span className="text-gray-300 text-sm font-medium"></span>
+          </motion.div>
 
-        <div className="flex gap-2 mb-2">
-          <div className="flex items-center gap-1">
-            <FaFilter className="text-gray-400 text-sm" />
-            <span className="text-gray-300 text-sm">Filters:</span>
-          </div>
-
-          <select
+          <motion.select
             value={countryFilter}
             onChange={handleCountryFilterChange}
-            className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
+            className="text-sm bg-gray-800/80 border border-gray-700 rounded-lg px-2 py-1 text-gray-200"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
           >
             <option value="all">All Countries</option>
             <option value="South Korea">South Korea</option>
             <option value="Japan">Japan</option>
-          </select>
+          </motion.select>
 
-          <select
+          <motion.select
             value={rankFilter}
             onChange={handleRankFilterChange}
-            className="text-xs bg-gray-800 border border-gray-700 rounded px-2 py-1 text-gray-200"
+            className="text-sm bg-gray-800/80 border border-gray-700 rounded-lg px-2 py-1 text-gray-200"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
           >
             <option value="all">All Ranks</option>
             <option value="S">S Rank</option>
@@ -204,118 +209,126 @@ const HuntersMap = () => {
             <option value="C">C Rank</option>
             <option value="D">D Rank</option>
             <option value="E">E Rank</option>
-          </select>
+          </motion.select>
+
+          <motion.div
+            className="ml-auto text-sm text-gray-400"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            {filteredLocations.length} gates found
+          </motion.div>
         </div>
       </div>
 
-      <div className="h-[320px] relative z-0">
-        <MapContainer
-          center={mapCenter}
-          zoom={mapZoom}
-          style={{ height: "100%", width: "100%" }}
-          scrollWheelZoom={true}
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            className="map-tiles-dark" // Apply custom CSS for dark map
-          />
+      <MapContainer
+        center={mapCenter}
+        zoom={mapZoom}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={true}
+        zoomControl={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          className="map-tiles-dark" // Apply custom CSS for dark map
+        />
 
-          <ChangeMapView center={mapCenter} zoom={mapZoom} />
+        <ZoomControl position="bottomright" />
+        <ChangeMapView center={mapCenter} zoom={mapZoom} />
 
-          <LayerGroup>
-            {filteredLocations.map((location) => (
-              <React.Fragment key={location.id}>
-                <Marker
-                  position={[location.lat, location.lng]}
-                  icon={createRankIcon(location.rank)}
-                >
-                  <Popup className="dark-popup" minWidth={200} maxWidth={300}>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: getPopupContent(location),
-                      }}
-                    />
-                  </Popup>
-                </Marker>
-                <CircleMarker
-                  center={[location.lat, location.lng]}
-                  radius={
+        <LayerGroup>
+          {filteredLocations.map((location) => (
+            <React.Fragment key={location.id}>
+              <Marker
+                position={[location.lat, location.lng]}
+                icon={createRankIcon(location.rank)}
+              >
+                <Popup className="dark-popup" minWidth={250} maxWidth={350}>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: getPopupContent(location),
+                    }}
+                  />
+                </Popup>
+              </Marker>
+              <CircleMarker
+                center={[location.lat, location.lng]}
+                radius={
+                  location.rank === "S"
+                    ? 35
+                    : location.rank === "A"
+                    ? 30
+                    : location.rank === "B"
+                    ? 25
+                    : location.rank === "C"
+                    ? 20
+                    : location.rank === "D"
+                    ? 15
+                    : 10
+                }
+                pathOptions={{
+                  color:
                     location.rank === "S"
-                      ? 30
+                      ? "#ef4444"
                       : location.rank === "A"
-                      ? 25
+                      ? "#f97316"
                       : location.rank === "B"
-                      ? 20
+                      ? "#eab308"
                       : location.rank === "C"
-                      ? 15
+                      ? "#22c55e"
                       : location.rank === "D"
-                      ? 10
-                      : 5
-                  }
-                  pathOptions={{
-                    color:
-                      location.rank === "S"
-                        ? "#ef4444"
-                        : location.rank === "A"
-                        ? "#f97316"
-                        : location.rank === "B"
-                        ? "#eab308"
-                        : location.rank === "C"
-                        ? "#22c55e"
-                        : location.rank === "D"
-                        ? "#3b82f6"
-                        : "#a855f7",
-                    fillColor:
-                      location.rank === "S"
-                        ? "#ef4444"
-                        : location.rank === "A"
-                        ? "#f97316"
-                        : location.rank === "B"
-                        ? "#eab308"
-                        : location.rank === "C"
-                        ? "#22c55e"
-                        : location.rank === "D"
-                        ? "#3b82f6"
-                        : "#a855f7",
-                    fillOpacity: 0.1,
-                    weight: 1,
-                  }}
-                />
-              </React.Fragment>
-            ))}
-          </LayerGroup>
-        </MapContainer>
+                      ? "#3b82f6"
+                      : "#a855f7",
+                  fillColor:
+                    location.rank === "S"
+                      ? "#ef4444"
+                      : location.rank === "A"
+                      ? "#f97316"
+                      : location.rank === "B"
+                      ? "#eab308"
+                      : location.rank === "C"
+                      ? "#22c55e"
+                      : location.rank === "D"
+                      ? "#3b82f6"
+                      : "#a855f7",
+                  fillOpacity: 0.2,
+                  weight: 1,
+                }}
+              />
+            </React.Fragment>
+          ))}
+        </LayerGroup>
+      </MapContainer>
 
-        <div className="absolute bottom-2 right-2 bg-gray-800 bg-opacity-75 p-2 rounded border border-gray-700 z-10">
-          <div className="flex flex-col gap-1">
-            {["S", "A", "B", "C", "D", "E"].map((rank) => (
-              <div key={rank} className="flex items-center gap-1">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{
-                    backgroundColor:
-                      rank === "S"
-                        ? "#ef4444"
-                        : rank === "A"
-                        ? "#f97316"
-                        : rank === "B"
-                        ? "#eab308"
-                        : rank === "C"
-                        ? "#22c55e"
-                        : rank === "D"
-                        ? "#3b82f6"
-                        : "#a855f7",
-                  }}
-                ></div>
-                <span className="text-xs text-gray-200">{rank} Rank</span>
-              </div>
-            ))}
-          </div>
+      <div className="absolute bottom-6 right-6 bg-gray-900 bg-opacity-80 p-2 rounded-lg border border-gray-700 z-10">
+        <div className="flex flex-col gap-1">
+          {["S", "A", "B", "C", "D", "E"].map((rank) => (
+            <div key={rank} className="flex items-center gap-1">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor:
+                    rank === "S"
+                      ? "#ef4444"
+                      : rank === "A"
+                      ? "#f97316"
+                      : rank === "B"
+                      ? "#eab308"
+                      : rank === "C"
+                      ? "#22c55e"
+                      : rank === "D"
+                      ? "#3b82f6"
+                      : "#a855f7",
+                }}
+              ></div>
+              <span className="text-xs text-gray-200">{rank} Rank</span>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
